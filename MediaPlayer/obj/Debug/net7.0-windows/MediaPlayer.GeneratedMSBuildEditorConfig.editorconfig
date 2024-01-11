@@ -8,4 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = MediaPlayer
-build_property.ProjectDir = E:\Courses\School\Nam3\Windows\Project\MediaPlayer\MediaPlayer\
+build_property.ProjectDir = C:\Users\cvtai\OneDrive\Desktop\MediaPlayer\MediaPlayer\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
