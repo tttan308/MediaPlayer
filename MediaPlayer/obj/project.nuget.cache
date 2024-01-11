@@ -1,13 +1,21 @@
 {
   "version": 2,
-  "dgSpecHash": "N2GRtJeiIVMKS6+8AWIie6YAlKo2nzcOFcU1IGZsJ9X1N4WrZKfkFj9Y0DZqqmPoGze4WnckuW8ldQfgOgXPRQ==",
+  "dgSpecHash": "l/WXqrU8htE54Mxd//OlqC+flGc0Qw8HCptPUmVqPq05usRruwvxTxBPWH+AMsFlXjST0rYBcvi+I5oHbSsNnA==",
   "success": true,
   "projectFilePath": "C:\\Users\\cvtai\\OneDrive\\Desktop\\MediaPlayer\\MediaPlayer\\MediaPlayer.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\cvtai\\.nuget\\packages\\controlzex\\6.0.0\\controlzex.6.0.0.nupkg.sha512",
     "C:\\Users\\cvtai\\.nuget\\packages\\fluent.ribbon\\10.0.4\\fluent.ribbon.10.0.4.nupkg.sha512",
     "C:\\Users\\cvtai\\.nuget\\packages\\microsoft.xaml.behaviors.wpf\\1.1.39\\microsoft.xaml.behaviors.wpf.1.1.39.nupkg.sha512",
+    "C:\\Users\\cvtai\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
     "C:\\Users\\cvtai\\.nuget\\packages\\system.text.json\\5.0.2\\system.text.json.5.0.2.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "Undefined",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Problem reading the cache file C:\\Users\\cvtai\\OneDrive\\Desktop\\MediaPlayer\\MediaPlayer\\obj\\project.nuget.cache : Invalid property identifier character: <. Path 'version', line 3, position 0."
+    }
+  ]
 }

@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET7_0;NETCOREAPP
 C:\Users\cvtai\OneDrive\Desktop\MediaPlayer\MediaPlayer\App.xaml
-11407045341
+3-1762704785
 
-5-99283210
-210-667314011
-MainWindow.xaml;
+7-1972098097
+2111462029964
+InputBox.xaml;MainWindow.xaml;PlaylistSelectionDialog.xaml;
 
-True
+False
 
