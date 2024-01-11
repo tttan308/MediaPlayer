@@ -24,3 +24,8 @@ E:\Courses\School\Nam3\Windows\Project\MediaPlayer\MediaPlayer\obj\Debug\net7.0-
 E:\Courses\School\Nam3\Windows\Project\MediaPlayer\MediaPlayer\obj\Debug\net7.0-windows\ref\MediaPlayer.dll
 E:\Courses\School\Nam3\Windows\Project\MediaPlayer\MediaPlayer\obj\Debug\net7.0-windows\MediaPlayer_MarkupCompile.lref
 E:\Courses\School\Nam3\Windows\Project\MediaPlayer\MediaPlayer\obj\Debug\net7.0-windows\App.baml
+E:\Courses\School\Nam3\Windows\Project\MediaPlayer\MediaPlayer\bin\Debug\net7.0-windows\Newtonsoft.Json.dll
+E:\Courses\School\Nam3\Windows\Project\MediaPlayer\MediaPlayer\obj\Debug\net7.0-windows\InputBox.g.cs
+E:\Courses\School\Nam3\Windows\Project\MediaPlayer\MediaPlayer\obj\Debug\net7.0-windows\PlaylistSelectionDialog.g.cs
+E:\Courses\School\Nam3\Windows\Project\MediaPlayer\MediaPlayer\obj\Debug\net7.0-windows\InputBox.baml
+E:\Courses\School\Nam3\Windows\Project\MediaPlayer\MediaPlayer\obj\Debug\net7.0-windows\PlaylistSelectionDialog.baml
