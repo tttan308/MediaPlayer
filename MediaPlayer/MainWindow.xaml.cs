@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 using Fluent;
 using Microsoft.Win32;
@@ -31,15 +32,41 @@ namespace MediaPlayer
         public MainWindow()
         {
             InitializeComponent();
-            PlaylistBox.ItemsSource = _playlist;
-            InitializeTimer();
-            mediaPlayer.ScrubbingEnabled = true;
+            InitializeComponents();
+            LoadRecentFiles();
         }
 
-        private void InitializeTimer()
+        private void InitializeComponents()
         {
-            _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(.1) };
+            PlaylistBox.ItemsSource = _playlist;
+            _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(0.1) };
             _timer.Tick += Timer_Tick;
+            mediaPlayer.ScrubbingEnabled = true;
+            this.Closing += MainWindow_Closing;
+        }
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            SaveRecentFiles();
+        }
+
+        private void SaveRecentFiles()
+        {
+            var recentFiles = _playlist.Select(file => new { file.FileName, file.Position }).ToList();
+            var json = JsonConvert.SerializeObject(recentFiles);
+            File.WriteAllText("recentFiles.json", json);
+        }
+
+        private void LoadRecentFiles()
+        {
+            if (!File.Exists("recentFiles.json")) return;
+            var json = File.ReadAllText("recentFiles.json");
+            var recentFiles = JsonConvert.DeserializeObject<List<MediaFile>>(json);
+            foreach (var file in recentFiles)
+            {
+                AddFileToPlaylist(file.FileName);
+                _playlist.Last().Position = file.Position;
+            }
         }
 
         private void AddMediaFile(object sender, RoutedEventArgs e)
@@ -67,7 +94,8 @@ namespace MediaPlayer
                 return;
             }
 
-            _playlist.Add(new MediaFile { FileName = fileName });
+            _playlist.Add(new MediaFile { FileName = fileName, Position = TimeSpan.Zero });
+
             if (!_currentPlaylist.Contains(fileName))
             {
                 _currentPlaylist.Add(fileName);
@@ -107,11 +135,14 @@ namespace MediaPlayer
             _currentFile = selectedFile;
             _currentIndex = _playlist.IndexOf(selectedFile);
             SetMediaPlayerSource(selectedFile.FileName);
+            mediaPlayer.Position = selectedFile.Position;
+            UpdateMediaProgress();
             mediaPlayer.Play();
         }
 
         private void SetMediaPlayerSource(string fileName)
         {
+            mediaPlayer.Source = null;
             mediaPlayer.Source = new Uri(fileName);
             mediaPlayer.LoadedBehavior = MediaState.Manual;
         }
@@ -173,6 +204,7 @@ namespace MediaPlayer
                 _currentIndex = 0;
 
             _currentFile = _playlist.ElementAtOrDefault(_currentIndex);
+            PlaylistBox.SelectedIndex = _currentIndex;
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -358,7 +390,7 @@ namespace MediaPlayer
                 }
 
                 _currentFile = _playlist[_currentIndex];
-                SetMediaPlayerSourceAndPlay(_currentFile.FileName);
+                SetMediaPlayerSourceAndPlay(_currentFile);
             }
             PlaylistBox.SelectedIndex = _currentIndex;
         }
@@ -387,14 +419,15 @@ namespace MediaPlayer
                 }
 
                 _currentFile = _playlist[_currentIndex];
-                SetMediaPlayerSourceAndPlay(_currentFile.FileName);
+                SetMediaPlayerSourceAndPlay(_currentFile);
             }
             PlaylistBox.SelectedIndex = _currentIndex;
         }
 
-        private void SetMediaPlayerSourceAndPlay(string fileName)
+        private void SetMediaPlayerSourceAndPlay(MediaFile file)
         {
-            SetMediaPlayerSource(fileName);
+            SetMediaPlayerSource(file.FileName);
+            mediaPlayer.Position = file.Position;
             mediaPlayer.Play();
         }
 
@@ -435,10 +468,5 @@ namespace MediaPlayer
                 mediaPlayer.Play();
             }
         }
-    }
-
-    internal class MediaFile
-    {
-        public string FileName { get; set; }
     }
 }
