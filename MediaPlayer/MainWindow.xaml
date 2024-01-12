@@ -109,7 +109,7 @@
 
         <DockPanel Grid.Row="2" LastChildFill="False" Background="#FF333333">
             <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Width="709">
-                <Button  Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Previous_Click" >
+                <Button Name="PlayPreviousButton" Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Previous_Click" >
                     <TextBlock FontFamily="Segoe Fluent Icons" Text="&#xE892;" TextAlignment="Center" FontSize="20"    />
                 </Button>
                 <Button x:Name="PlayButton" Background="DodgerBlue" Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Play_Click" Visibility="Collapsed">
@@ -128,11 +128,11 @@
                         </Style>
                     </Button.Resources>
                 </Button>
-                <Button Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Stop_Click" >
+                <Button Name="ReplayButton" Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Stop_Click" >
 
                     <TextBlock FontFamily="Segoe Fluent Icons" Text="&#xEF3B;" TextAlignment="Center" FontSize="20"    />
                 </Button>
-                <Button Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Next_Click">
+                <Button x:Name="PlayNextButton" Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Next_Click">
 
                     <TextBlock FontFamily="Segoe Fluent Icons" Text="&#xE893;" TextAlignment="Center" FontSize="20"    />
                 </Button>
