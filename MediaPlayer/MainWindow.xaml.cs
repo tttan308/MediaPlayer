@@ -106,8 +106,7 @@ public partial class MainWindow : RibbonWindow
             mediaPlayer.MediaFailed += mediaPlayer_MediaFailed; // Đăng ký sự kiện lỗi
 
             mediaPlayer.Position = _currentFile.Position;
-            if (!_isPlayVisible)
-                mediaPlayer.Play();
+            mediaPlayer.Play();
         }
     }
 
@@ -240,6 +239,8 @@ public partial class MainWindow : RibbonWindow
 
         UpdateProgressLabels();
         _isPlaying = true;
+        _isPlayVisible = false;
+        UpdateButtonVisibility();
         _timer.Start();
 
         mediaProgress.Value = 0;
@@ -343,10 +344,9 @@ public partial class MainWindow : RibbonWindow
 
         mediaPlayer.Play();
         _isPlaying = true;
-        _timer.Start();
-
         _isPlayVisible = false;
         UpdateButtonVisibility();
+        _timer.Start();
     }
 
     private void Pause_Click(object sender, RoutedEventArgs e)
@@ -364,10 +364,9 @@ public partial class MainWindow : RibbonWindow
         mediaPlayer.Position = _currentFile.Position;
         mediaPlayer.Pause();
         _isPlaying = false;
-        _timer.Stop();
-
         _isPlayVisible = true;
         UpdateButtonVisibility();
+        _timer.Stop();
     }
 
     private void UpdateButtonVisibility()
@@ -585,12 +584,21 @@ public partial class MainWindow : RibbonWindow
     private void mediaProgress_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         _isDragging = true;
+        _wasPlayingBeforeDrag = _isPlaying;
+
+        if (_isPlaying)
+        {
+            mediaPlayer.Pause();
+            _isPlaying = false;
+        }
+
         var mousePosition = e.GetPosition(mediaProgress);
         var newPosition = (mousePosition.X / mediaProgress.ActualWidth) * mediaProgress.Maximum;
         mediaProgress.Value = newPosition;
         mediaPlayer.Pause();
     }
 
+    private bool _wasPlayingBeforeDrag = false;
     private void mediaPlayer_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (_isPlaying)
@@ -609,14 +617,21 @@ public partial class MainWindow : RibbonWindow
 
     private void mediaProgress_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
     {
-        if (_isDragging)
+        _isDragging = false;
+
+        var mousePosition = e.GetPosition(mediaProgress);
+        var newPosition = (mousePosition.X / mediaProgress.ActualWidth) * mediaProgress.Maximum;
+        mediaPlayer.Position = TimeSpan.FromSeconds(newPosition);
+
+        if (_wasPlayingBeforeDrag)
         {
-            var mousePosition = e.GetPosition(mediaProgress);
-            var newPosition = (mousePosition.X / mediaProgress.ActualWidth) * mediaProgress.Maximum;
-            mediaPlayer.Position = TimeSpan.FromSeconds(newPosition);
-            _isDragging = false;
             mediaPlayer.Play();
+            _isPlaying = true;
+            _wasPlayingBeforeDrag = false;
         }
+
+        
+        UpdateButtonVisibility();
     }
 
     private HotKey _pauseOrPlay;
