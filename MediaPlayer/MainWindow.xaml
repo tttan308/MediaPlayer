@@ -96,7 +96,7 @@
                 </Fluent:RibbonGroupBox>
             </Fluent:RibbonTabItem>
         </Fluent:Ribbon>
-        
+
 
         <Grid Grid.Row="1" Margin="0,10">
             <MediaElement Name="mediaPlayer"
@@ -108,7 +108,7 @@
         </Grid>
 
         <DockPanel Grid.Row="2" LastChildFill="False" Background="#FF333333">
-            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Width="709">
                 <Button  Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Previous_Click" >
                     <TextBlock FontFamily="Segoe Fluent Icons" Text="&#xE892;" TextAlignment="Center" FontSize="20"    />
                 </Button>
@@ -143,7 +143,7 @@
 
                     <TextBlock FontFamily="Segoe Fluent Icons" Text="&#xE8B1;" TextAlignment="Center" FontSize="20"    />
                 </ToggleButton>
-                <Label x:Name="mediaProgressMinLabel" Foreground="White" />
+                <Label x:Name="mediaProgressMinLabel" Foreground="White" Width="61" Height="26" />
                 <Slider x:Name="mediaProgress"
                         Width="300"
                         PreviewMouseLeftButtonDown="mediaProgress_PreviewMouseLeftButtonDown"
@@ -161,7 +161,7 @@
                     </Slider.RenderTransform>
                 </Slider>
                 <Label x:Name="mediaProgressLabel" Foreground="White" />
-                <Label x:Name="mediaProgressMaxLabel" Foreground="White" />
+                <Label x:Name="mediaProgressMaxLabel" Foreground="White" Width="61" Height="26"/>
             </StackPanel>
             <StackPanel DockPanel.Dock="Right"
                         Orientation="Horizontal"
@@ -176,7 +176,7 @@
                         VerticalAlignment="Center"
                         Margin="5"
                         ValueChanged="volumeSlider_ValueChanged" />
-                <Button Content="Volume" Style="{StaticResource MediaControlButtonStyle}" Margin="5" />
+                <Button Content="Volume" Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Volume_Click"/>
             </StackPanel>
         </DockPanel>
 

@@ -634,6 +634,18 @@ public partial class MainWindow : RibbonWindow
         UpdateButtonVisibility();
     }
 
+    private void Volume_Click(object sender, RoutedEventArgs e)
+    {
+        if (volumeSlider.Value > 0)
+        {
+            volumeSlider.Value = 0;
+        }
+        else
+        {
+            volumeSlider.Value = 10;
+        }
+        
+    }
     private HotKey _pauseOrPlay;
     private HotKey _skip;
 
