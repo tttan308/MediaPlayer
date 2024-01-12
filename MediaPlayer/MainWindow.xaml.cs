@@ -7,10 +7,12 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 using Fluent;
 using Microsoft.Win32;
 using Newtonsoft.Json;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
 namespace MediaPlayer;
 
@@ -23,10 +25,10 @@ public partial class MainWindow : RibbonWindow
     private bool _isDragging = false;
     private bool _isPlaying = false;
     private List<string> _currentPlaylist = new List<string>();
-    private Dictionary<string, List<string>> _playlists =
-        new Dictionary<string, List<string>>();
+    private Dictionary<string, List<string>> _playlists = new Dictionary<string, List<string>>();
     private Random _random = new Random();
     private bool _isShuffle = false;
+    private bool _isPlayVisible = true;
 
     public MainWindow()
     {
@@ -34,12 +36,84 @@ public partial class MainWindow : RibbonWindow
         PlaylistBox.ItemsSource = _playlist;
         InitializeTimer();
         mediaPlayer.ScrubbingEnabled = true;
-        RegisterHotKeys();
+        this.Closing += MainWindow_Closing;
+        LoadRecentlyPlayedFiles();
+        mediaPlayer.MediaOpened += mediaPlayer_MediaOpened;
+        PlayButton.Visibility = Visibility.Collapsed;
+
+        // RegisterHotKeys();
     }
 
-    private void RegisterHotKeys() {
-         _pauseOrPlay = new HotKey(Key.Space, KeyModifier.None, PlayPauseMedia);
-        _skip = new HotKey(Key.Right, KeyModifier.None, NextMediaFile);
+    // private void RegisterHotKeys()
+    // {
+    //     _pauseOrPlay = new HotKey(Key.Space, KeyModifier.None, PlayPauseMedia);
+    //     _skip = new HotKey(Key.Right, KeyModifier.None, NextMediaFile);
+    // }
+
+    private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+        var jsonString = System.Text.Json.JsonSerializer.Serialize(_playlist);
+        System.IO.File.WriteAllText("playlist.json", jsonString);
+        jsonString = System.Text.Json.JsonSerializer.Serialize(_currentFile);
+        System.IO.File.WriteAllText("currentFile.json", jsonString);
+    }
+
+    private void LoadRecentlyPlayedFiles()
+    {
+        if (System.IO.File.Exists("playlist.json"))
+        {
+            var jsonString = System.IO.File.ReadAllText("playlist.json");
+            _playlist = System.Text.Json.JsonSerializer.Deserialize<
+                ObservableCollection<MediaFile>
+            >(jsonString);
+            PlaylistBox.ItemsSource = _playlist;
+        }
+
+        /*// duyệt hết _playlist, Play tất cả các file trong _playlist, bằng một lý do nào đó nó phải load 2 lần mới chạy ???
+        */
+        /*for (int i = 0; i < _playlist.Count; i++)
+                {
+                    // play Những file mp3
+                    if (_playlist[i].FileName.EndsWith(".mp3"))
+                    {
+                        mediaPlayer.Source = new Uri(_playlist[i].FileName);
+                        mediaPlayer.LoadedBehavior = MediaState.Manual;
+                        mediaPlayer.Play();
+                        mediaPlayer.Stop();
+                        mediaPlayer.Play();
+                    }
+                }*/
+
+        if (System.IO.File.Exists("currentFile.json"))
+        {
+            var jsonString = System.IO.File.ReadAllText("currentFile.json");
+            _currentFile = System.Text.Json.JsonSerializer.Deserialize<MediaFile>(jsonString);
+            _currentIndex = _playlist.IndexOf(_currentFile);
+            PlaylistBox.SelectedIndex = _currentIndex;
+        }
+
+        /*if (_currentFile != null)
+        {
+            SetMediaPlayerSource(_currentFile.FileName);
+            mediaPlayer.Position = _currentFile.Position;
+            mediaPlayer.Play();
+        }*/
+
+        if (_currentFile != null)
+        {
+            mediaPlayer.MediaOpened -= mediaPlayer_MediaOpened; // Loại bỏ lắng nghe sự kiện cũ
+            mediaPlayer.MediaOpened += mediaPlayer_MediaOpened; // Đăng ký sự kiện mới
+            mediaPlayer.MediaFailed += mediaPlayer_MediaFailed; // Đăng ký sự kiện lỗi
+
+            mediaPlayer.Position = _currentFile.Position;
+            if (!_isPlayVisible)
+                mediaPlayer.Play();
+        }
+    }
+
+    private void mediaPlayer_MediaFailed(object sender, ExceptionRoutedEventArgs e)
+    {
+        MessageBox.Show($"Error playing media: {e.ErrorException.Message}");
     }
 
     private void InitializeTimer()
@@ -74,6 +148,7 @@ public partial class MainWindow : RibbonWindow
         }
 
         _playlist.Add(new MediaFile { FileName = fileName });
+
         if (!_currentPlaylist.Contains(fileName))
         {
             _currentPlaylist.Add(fileName);
@@ -91,6 +166,12 @@ public partial class MainWindow : RibbonWindow
     private void HandleMediaRemoval(MediaFile file)
     {
         _playlist.Remove(file);
+        if (_playlist.Count == 0)
+        {
+            UpdateTimeLabel(mediaProgressMaxLabel, 0);
+            UpdateTimeLabel(mediaProgressMinLabel, 0);
+        }
+
         if (file == _currentFile)
             ResetMediaPlayer();
     }
@@ -100,26 +181,54 @@ public partial class MainWindow : RibbonWindow
         mediaPlayer.Stop();
         _currentFile = _playlist.FirstOrDefault();
         if (_currentFile != null)
+        {
             SetMediaPlayerSource(_currentFile.FileName);
+            mediaPlayer.Position = _currentFile.Position;
+            if (!_isPlayVisible)
+                mediaPlayer.Play();
+        }
         else
             mediaPlayer.Source = null;
     }
 
     private void PlaylistBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (e.AddedItems.Count == 0 || !(e.AddedItems[0] is MediaFile selectedFile))
+        if (_currentFile != null)
+        {
+            _currentFile.Position = mediaPlayer.Position;
+            int currentIndex = _playlist.IndexOf(_currentFile);
+            if (currentIndex != -1)
+            {
+                _playlist[currentIndex] = _currentFile;
+            }
+        }
+
+        if (!(PlaylistBox.SelectedItem is MediaFile selectedFile))
             return;
 
+        _currentFile = null;
         _currentFile = selectedFile;
         _currentIndex = _playlist.IndexOf(selectedFile);
         SetMediaPlayerSource(selectedFile.FileName);
-        mediaPlayer.Play();
+        mediaPlayer.Position = selectedFile.Position;
+        mediaProgress.Value = selectedFile.Position.TotalSeconds;
+        if (!_isPlayVisible)
+        {
+            mediaPlayer.Play();
+        }
     }
 
     private void SetMediaPlayerSource(string fileName)
     {
-        mediaPlayer.Source = new Uri(fileName);
-        mediaPlayer.LoadedBehavior = MediaState.Manual;
+        try
+        {
+            mediaPlayer.Source = new Uri(fileName);
+            mediaPlayer.LoadedBehavior = MediaState.Manual;
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Error setting media source: {ex.Message}");
+        }
     }
 
     private void mediaPlayer_MediaOpened(object sender, RoutedEventArgs e)
@@ -132,6 +241,8 @@ public partial class MainWindow : RibbonWindow
         UpdateProgressLabels();
         _isPlaying = true;
         _timer.Start();
+
+        mediaProgress.Value = 0;
     }
 
     private void UpdateProgressLabels()
@@ -140,10 +251,7 @@ public partial class MainWindow : RibbonWindow
         UpdateTimeLabel(mediaProgressMinLabel, mediaProgress.Minimum);
     }
 
-    private void mediaProgress_ValueChanged(
-        object sender,
-        RoutedPropertyChangedEventArgs<double> e
-    )
+    private void mediaProgress_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
         if (_isDragging)
         {
@@ -156,10 +264,10 @@ public partial class MainWindow : RibbonWindow
 
     private void HandleMediaProgressCompletion()
     {
-        if (mediaProgress.Value == mediaProgress.Maximum)
-        {
-            PlayNextMediaFile();
-        }
+        // if (mediaProgress.Value == mediaProgress.Maximum)
+        // {
+        //     PlayNextMediaFile();
+        // }
     }
 
     private void PlayNextMediaFile()
@@ -168,7 +276,9 @@ public partial class MainWindow : RibbonWindow
         if (_currentFile != null)
         {
             SetMediaPlayerSource(_currentFile.FileName);
-            mediaPlayer.Play();
+            mediaPlayer.Position = _currentFile.Position;
+            if (_isPlayVisible)
+                mediaPlayer.Play();
         }
     }
 
@@ -219,32 +329,75 @@ public partial class MainWindow : RibbonWindow
             SetMediaPlayerSource(_currentFile.FileName);
         }
 
+        if (_currentFile != null)
+        {
+            _currentFile.Position = mediaPlayer.Position;
+            int currentIndex = _playlist.IndexOf(_currentFile);
+            if (currentIndex != -1)
+            {
+                _playlist[currentIndex] = _currentFile;
+            }
+        }
+
+        mediaPlayer.Position = _currentFile.Position;
+
         mediaPlayer.Play();
         _isPlaying = true;
         _timer.Start();
+
+        _isPlayVisible = false;
+        UpdateButtonVisibility();
     }
 
     private void Pause_Click(object sender, RoutedEventArgs e)
     {
+        if (_currentFile != null)
+        {
+            _currentFile.Position = mediaPlayer.Position;
+            int currentIndex = _playlist.IndexOf(_currentFile);
+            if (currentIndex != -1)
+            {
+                _playlist[currentIndex] = _currentFile;
+            }
+        }
+
+        mediaPlayer.Position = _currentFile.Position;
         mediaPlayer.Pause();
         _isPlaying = false;
         _timer.Stop();
+
+        _isPlayVisible = true;
+        UpdateButtonVisibility();
+    }
+
+    private void UpdateButtonVisibility()
+    {
+        PlayButton.Visibility = _isPlayVisible ? Visibility.Visible : Visibility.Collapsed;
+        PauseButton.Visibility = _isPlayVisible ? Visibility.Collapsed : Visibility.Visible;
     }
 
     private void Stop_Click(object sender, RoutedEventArgs e)
     {
+        if (_currentFile != null)
+        {
+            _currentFile.Position = mediaPlayer.Position;
+            int currentIndex = _playlist.IndexOf(_currentFile);
+            if (currentIndex != -1)
+            {
+                _playlist[currentIndex] = _currentFile;
+            }
+        }
+
+        mediaPlayer.Position = _currentFile.Position;
         mediaPlayer.Stop();
         _isPlaying = false;
         _timer.Stop();
         ResetMediaProgress();
     }
 
-    private void volumeSlider_ValueChanged(
-        object sender,
-        RoutedPropertyChangedEventArgs<double> e
-    )
+    private void volumeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
-        mediaPlayer.Volume = volumeSlider.Value / 100;
+        mediaPlayer.Volume = volumeSlider.Value / 10;
     }
 
     private void ResetMediaProgress()
@@ -327,21 +480,31 @@ public partial class MainWindow : RibbonWindow
     {
         if (_playlist.Count > 0)
         {
-            _playlist = new ObservableCollection<MediaFile>(
-                _playlist.OrderBy(x => _random.Next())
-            );
+            _playlist = new ObservableCollection<MediaFile>(_playlist.OrderBy(x => _random.Next()));
             PlaylistBox.ItemsSource = _playlist;
             MoveToNextMediaFile();
             if (_currentFile != null)
             {
                 SetMediaPlayerSource(_currentFile.FileName);
-                mediaPlayer.Play();
+                mediaPlayer.Position = _currentFile.Position;
+                if (_isPlayVisible)
+                    mediaPlayer.Play();
             }
         }
     }
 
     private void Previous_Click(object sender, RoutedEventArgs e)
     {
+        if (_currentFile != null)
+        {
+            _currentFile.Position = mediaPlayer.Position;
+            int currentIndex = _playlist.IndexOf(_currentFile);
+            if (currentIndex != -1)
+            {
+                _playlist[currentIndex] = _currentFile;
+            }
+        }
+
         if (_isShuffle)
         {
             var random = new Random();
@@ -366,11 +529,24 @@ public partial class MainWindow : RibbonWindow
             _currentFile = _playlist[_currentIndex];
             SetMediaPlayerSourceAndPlay(_currentFile.FileName);
         }
-        PlaylistBox.SelectedIndex = _currentIndex;
+
+        mediaPlayer.Position = _currentFile.Position;
+        if (_isPlayVisible)
+            mediaPlayer.Play();
     }
 
     private void Next_Click(object sender, RoutedEventArgs e)
     {
+        if (_currentFile != null)
+        {
+            _currentFile.Position = mediaPlayer.Position;
+            int currentIndex = _playlist.IndexOf(_currentFile);
+            if (currentIndex != -1)
+            {
+                _playlist[currentIndex] = _currentFile;
+            }
+        }
+
         if (_isShuffle)
         {
             var random = new Random();
@@ -395,10 +571,10 @@ public partial class MainWindow : RibbonWindow
             _currentFile = _playlist[_currentIndex];
             SetMediaPlayerSourceAndPlay(_currentFile.FileName);
         }
-        PlaylistBox.SelectedIndex = _currentIndex;
+        mediaPlayer.Position = _currentFile.Position;
+        if (_isPlayVisible)
+            mediaPlayer.Play();
     }
-
-
 
     private void SetMediaPlayerSourceAndPlay(string fileName)
     {
@@ -436,8 +612,7 @@ public partial class MainWindow : RibbonWindow
         if (_isDragging)
         {
             var mousePosition = e.GetPosition(mediaProgress);
-            var newPosition =
-                (mousePosition.X / mediaProgress.ActualWidth) * mediaProgress.Maximum;
+            var newPosition = (mousePosition.X / mediaProgress.ActualWidth) * mediaProgress.Maximum;
             mediaPlayer.Position = TimeSpan.FromSeconds(newPosition);
             _isDragging = false;
             mediaPlayer.Play();
@@ -447,33 +622,42 @@ public partial class MainWindow : RibbonWindow
     private HotKey _pauseOrPlay;
     private HotKey _skip;
 
-    private void PlayPauseMedia(HotKey key) {
-        if(_isPlaying) {
+    private void PlayPauseMedia(HotKey key)
+    {
+        if (_isPlaying)
+        {
             mediaPlayer.Pause();
             _isPlaying = false;
             _timer.Stop();
         }
-        else {
+        else
+        {
             mediaPlayer.Play();
             _isPlaying = true;
             _timer.Start();
         }
     }
-    private void NextMediaFile(HotKey key) {
-        if (_isShuffle) {
+
+    private void NextMediaFile(HotKey key)
+    {
+        if (_isShuffle)
+        {
             var random = new Random();
             var nextIndex = random.Next(_playlist.Count);
             mediaPlayer.Source = new Uri(_playlist[nextIndex].FileName);
             _currentIndex = nextIndex;
         }
-        else {
-            if (_playlist.Count == 0) {
+        else
+        {
+            if (_playlist.Count == 0)
+            {
                 MessageBox.Show("The playlist is empty.");
                 return;
             }
 
             _currentIndex++;
-            if (_currentIndex >= _playlist.Count) {
+            if (_currentIndex >= _playlist.Count)
+            {
                 _currentIndex = 0;
             }
 
@@ -482,14 +666,4 @@ public partial class MainWindow : RibbonWindow
         }
         PlaylistBox.SelectedIndex = _currentIndex;
     }
-
 }
-
-internal class MediaFile
-{
-    public string FileName { get; set; }
-}
-
-
-//hooking   
-

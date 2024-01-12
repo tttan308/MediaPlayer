@@ -112,7 +112,7 @@
                 <Button  Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Previous_Click" >
                     <TextBlock FontFamily="Segoe Fluent Icons" Text="&#xE892;" TextAlignment="Center" FontSize="20"    />
                 </Button>
-                <Button Background="DodgerBlue" Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Play_Click" >
+                <Button x:Name="PlayButton" Background="DodgerBlue" Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Play_Click" Visibility="Collapsed">
                     <TextBlock FontFamily="Segoe Fluent Icons" Text="&#xF5B0;" TextAlignment="Center" FontSize="20"    />
                     <Button.Resources>
                         <Style TargetType="{x:Type Border}">
@@ -120,7 +120,7 @@
                         </Style>
                     </Button.Resources>
                 </Button>
-                <Button Background="DarkCyan" Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Pause_Click" >
+                <Button x:Name="PauseButton" Background="DarkCyan" Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Pause_Click" >
                     <TextBlock FontFamily="Segoe Fluent Icons" Text="&#xF8AE;" TextAlignment="Center" FontSize="20"    />
                     <Button.Resources>
                         <Style TargetType="{x:Type Border}">

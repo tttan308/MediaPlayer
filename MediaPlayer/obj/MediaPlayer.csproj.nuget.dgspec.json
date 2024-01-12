@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\cvtai\\OneDrive\\Desktop\\MediaPlayer\\MediaPlayer\\MediaPlayer.csproj": {}
+    "E:\\Courses\\School\\Nam3\\Windows\\Project\\MediaPlayer\\MediaPlayer\\MediaPlayer.csproj": {}
   },
   "projects": {
-    "C:\\Users\\cvtai\\OneDrive\\Desktop\\MediaPlayer\\MediaPlayer\\MediaPlayer.csproj": {
+    "E:\\Courses\\School\\Nam3\\Windows\\Project\\MediaPlayer\\MediaPlayer\\MediaPlayer.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\cvtai\\OneDrive\\Desktop\\MediaPlayer\\MediaPlayer\\MediaPlayer.csproj",
+        "projectUniqueName": "E:\\Courses\\School\\Nam3\\Windows\\Project\\MediaPlayer\\MediaPlayer\\MediaPlayer.csproj",
         "projectName": "MediaPlayer",
-        "projectPath": "C:\\Users\\cvtai\\OneDrive\\Desktop\\MediaPlayer\\MediaPlayer\\MediaPlayer.csproj",
-        "packagesPath": "C:\\Users\\cvtai\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\cvtai\\OneDrive\\Desktop\\MediaPlayer\\MediaPlayer\\obj\\",
+        "projectPath": "E:\\Courses\\School\\Nam3\\Windows\\Project\\MediaPlayer\\MediaPlayer\\MediaPlayer.csproj",
+        "packagesPath": "C:\\Users\\tantr\\.nuget\\packages\\",
+        "outputPath": "E:\\Courses\\School\\Nam3\\Windows\\Project\\MediaPlayer\\MediaPlayer\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\cvtai\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\tantr\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -26,8 +26,8 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {},
-          "https://nuget.telerik.com/v3/index.json": {}
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net7.0-windows7.0": {
@@ -73,7 +73,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.401\\RuntimeIdentifierGraph.json"
         }
       }
     }
