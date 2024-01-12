@@ -41,15 +41,30 @@ public partial class MainWindow : RibbonWindow
         mediaPlayer.MediaOpened += mediaPlayer_MediaOpened;
         PlayButton.Visibility = Visibility.Collapsed;
 
-        // RegisterHotKeys();
+        KeyDown += Window_KeyDown;
+
     }
 
-    // private void RegisterHotKeys()
-    // {
-    //     _pauseOrPlay = new HotKey(Key.Space, KeyModifier.None, PlayPauseMedia);
-    //     _skip = new HotKey(Key.Right, KeyModifier.None, NextMediaFile);
-    // }
-
+    private void Window_KeyDown(object sender, KeyEventArgs e) {
+        // Check for the desired shortcut (Ctrl+Alt+A)
+        if (Keyboard.Modifiers == ModifierKeys.None  && e.Key == Key.Space) {
+            if (_isPlaying) {
+                PauseButton.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
+            }
+            else {
+                PauseButton.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
+            }
+        }
+        else if (Keyboard.Modifiers == ModifierKeys.None && e.Key == Key.Left) {
+            PlayPreviousButton.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
+        }
+        else if (Keyboard.Modifiers == ModifierKeys.None && e.Key == Key.Right) {
+            PlayNextButton.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
+        }
+        else if (Keyboard.Modifiers == ModifierKeys.Control && e.Key == Key.R) {
+            ReplayButton.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Button.ClickEvent));
+        }
+    }
     private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
     {
         var jsonString = System.Text.Json.JsonSerializer.Serialize(_playlist);
