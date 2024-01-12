@@ -68,11 +68,31 @@
         <Fluent:Ribbon Grid.Row="0">
             <Fluent:RibbonTabItem Header="File">
                 <Fluent:RibbonGroupBox Header="Playlist">
-                    <Fluent:Button Header="Add File" Click="AddMediaFile" />
-                    <Fluent:Button Header="Remove File" Click="RemoveMediaFile" />
-                    <Fluent:Button Header="Save Playlist" Click="SavePlaylist" />
-                    <Fluent:Button Header="Load Playlist" Click="LoadPlaylist" />
-                    <Fluent:Button Header="Clear Playlist" Click="ClearPlaylist" />
+                    <Fluent:Button Header="Add File" Click="AddMediaFile" >
+                        <Fluent:Button.Icon>
+                            <TextBlock Foreground="DodgerBlue" FontFamily="Segoe Fluent Icons" Text="&#xE710;" TextAlignment="Center" FontSize="20" Margin='0 5 0 0' />
+                        </Fluent:Button.Icon>
+                    </Fluent:Button>
+                    <Fluent:Button Header="Remove File" Click="RemoveMediaFile" >
+                        <Fluent:Button.Icon>
+                            <TextBlock Foreground="Red" FontFamily="Segoe Fluent Icons" Text="&#xE738;" TextAlignment="Center" FontSize="20" Margin='0 5 0 0' />
+                        </Fluent:Button.Icon>
+                    </Fluent:Button>
+                    <Fluent:Button Header="Save Playlist" Click="SavePlaylist" >
+                        <Fluent:Button.Icon>
+                            <TextBlock FontFamily="Segoe Fluent Icons" Text="&#xE74E;" TextAlignment="Center" FontSize="20" Margin='0 5 0 0' />
+                        </Fluent:Button.Icon>
+                    </Fluent:Button>
+                    <Fluent:Button Header="Load Playlist" Click="LoadPlaylist">
+                        <Fluent:Button.Icon>
+                            <TextBlock FontFamily="Segoe Fluent Icons" Text="&#xE728;" TextAlignment="Center" FontSize="20" Margin='0 5 0 0' />
+                        </Fluent:Button.Icon>
+                    </Fluent:Button>
+                    <Fluent:Button Header="Clear Playlist" Click="ClearPlaylist" >
+                        <Fluent:Button.Icon>
+                            <TextBlock FontFamily="Segoe Fluent Icons" Text="&#xE894;" TextAlignment="Center" FontSize="20" Margin='0 5 0 0' />
+                        </Fluent:Button.Icon>
+                    </Fluent:Button>
                 </Fluent:RibbonGroupBox>
             </Fluent:RibbonTabItem>
         </Fluent:Ribbon>
@@ -89,16 +109,40 @@
 
         <DockPanel Grid.Row="2" LastChildFill="False" Background="#FF333333">
             <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Button Content="Previous" Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Previous_Click" />
-                <Button Content="Play" Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Play_Click" />
-                <Button Content="Pause" Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Pause_Click" />
-                <Button Content="Stop" Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Stop_Click" />
-                <Button Content="Next" Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Next_Click" />
+                <Button  Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Previous_Click" >
+                    <TextBlock FontFamily="Segoe Fluent Icons" Text="&#xE892;" TextAlignment="Center" FontSize="20"    />
+                </Button>
+                <Button x:Name="PlayButton" Background="DodgerBlue" Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Play_Click" Visibility="Collapsed">
+                    <TextBlock FontFamily="Segoe Fluent Icons" Text="&#xF5B0;" TextAlignment="Center" FontSize="20"    />
+                    <Button.Resources>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="CornerRadius" Value="100"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+                <Button x:Name="PauseButton" Background="DarkCyan" Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Pause_Click" >
+                    <TextBlock FontFamily="Segoe Fluent Icons" Text="&#xF8AE;" TextAlignment="Center" FontSize="20"    />
+                    <Button.Resources>
+                        <Style TargetType="{x:Type Border}">
+                            <Setter Property="CornerRadius" Value="100"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+                <Button Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Stop_Click" >
+
+                    <TextBlock FontFamily="Segoe Fluent Icons" Text="&#xEF3B;" TextAlignment="Center" FontSize="20"    />
+                </Button>
+                <Button Style="{StaticResource MediaControlButtonStyle}" Margin="5" Click="Next_Click">
+
+                    <TextBlock FontFamily="Segoe Fluent Icons" Text="&#xE893;" TextAlignment="Center" FontSize="20"    />
+                </Button>
                 <ToggleButton x:Name="ShuffleButton"
-                              Content="Shuffle"
                               Style="{StaticResource MediaControlToggleButtonStyle}"
                               Margin="5"
-                              Click="Shuffle_Click" />
+                              Click="Shuffle_Click" >
+
+                    <TextBlock FontFamily="Segoe Fluent Icons" Text="&#xE8B1;" TextAlignment="Center" FontSize="20"    />
+                </ToggleButton>
                 <Label x:Name="mediaProgressMinLabel" Foreground="White" />
                 <Slider x:Name="mediaProgress"
                         Width="300"
